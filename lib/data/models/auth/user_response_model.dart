@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class UserResponseModel extends Equatable {
+/*class UserResponseModel extends Equatable {
   final String accessToken;
   final String tokenType;
   final int isVendor;
@@ -73,70 +73,81 @@ class UserResponseModel extends Equatable {
       user!,
     ];
   }
-}
+}*/
 
 class UserResponse extends Equatable {
-  final int id;
-  final String name;
-  final String email;
-  final String phone;
-  final String image;
-  final int status;
+  final bool isAuthenticated;
+  final String id;
+  final String userFName;
+  final String userLName;
+  final String phoneNumber;
+  final String userName;
+  final String tokenString;
+  final String refreshToken;
 
   const UserResponse({
+    required this.isAuthenticated,
     required this.id,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.image,
-    required this.status,
+    required this.userFName,
+    required this.userLName,
+    required this.phoneNumber,
+    required this.userName,
+    required this.tokenString,
+    required this.refreshToken,
   });
 
   UserResponse copyWith({
-    int? id,
-    String? name,
-    String? email,
-    String? phone,
-    String? image,
-    int? status,
+    bool? isAuthenticated,
+    String? id,
+    String? userFName,
+    String? userLName,
+    String? phoneNumber,
+    String? userName,
+    String? tokenString,
+    String? refreshToken,
   }) {
     return UserResponse(
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       id: id ?? this.id,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      image: image ?? this.image,
-      status: status ?? this.status,
+      userFName: userFName ?? this.userFName,
+      userLName: userLName ?? this.userLName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      userName: userName ?? this.userName,
+      tokenString: tokenString ?? this.tokenString,
+      refreshToken: refreshToken ?? this.refreshToken,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'isAuthenticated': isAuthenticated,
       'id': id,
-      'name': name,
-      'email': email,
-      'phone': phone,
-      'image': image,
-      'status': status,
+      'userFName': userFName,
+      'userLName': userLName,
+      'phoneNumber': phoneNumber,
+      'userName': userName,
+      'tokenString': tokenString,
+      'refreshToken': refreshToken,
     };
   }
 
   factory UserResponse.fromMap(Map<String, dynamic> map) {
     return UserResponse(
-      id: map['id'] ?? 0,
-      name: map['name'] ?? '',
-      email: map['email'] ?? '',
-      phone: map['phone'] ?? '',
-      image: map['image'] ?? '',
-      status: map['status'] != null ? int.parse(map['status'].toString()) : 0,
+      isAuthenticated: map['isAuthenticated'] ?? false,
+      id: map['id'] ?? '',
+      userFName: map['userFName'] ?? '',
+      userLName: map['userLName'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
+      userName: map['userName'] ?? '',
+      tokenString: map['tokenString'] ?? '',
+      refreshToken: map['refreshToken'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory UserResponse.fromJson(String source) =>
-      UserResponse.fromMap(
-          json.decode(source) as Map<String, dynamic>);
+      UserResponse.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   bool get stringify => true;
@@ -144,12 +155,14 @@ class UserResponse extends Equatable {
   @override
   List<Object> get props {
     return [
+      isAuthenticated,
       id,
-      name,
-      email,
-      phone,
-      image,
-      status,
+      userFName,
+      userLName,
+      phoneNumber,
+      userName,
+      tokenString,
+      refreshToken,
     ];
   }
 }

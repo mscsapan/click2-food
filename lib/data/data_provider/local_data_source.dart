@@ -9,9 +9,9 @@ abstract class LocalDataSource {
 
   Future<bool> cachedOnBoarding();
 
-  Future<bool> cacheUserResponse(UserResponseModel userResponseModel);
+  Future<bool> cacheUserResponse(UserResponse userResponseModel);
 
-  UserResponseModel getExistingUserInfo();
+  UserResponse getExistingUserInfo();
 
   Future<bool> clearUserResponse();
 }
@@ -37,17 +37,17 @@ class LocalDataSourceImpl implements LocalDataSource {
   }
 
   @override
-  Future<bool> cacheUserResponse(UserResponseModel userResponseModel) {
+  Future<bool> cacheUserResponse(UserResponse userResponseModel) {
     return sharedPreferences.setString(
         KString.getExistingUserResponseKey, userResponseModel.toJson());
   }
 
   @override
-  UserResponseModel getExistingUserInfo() {
+  UserResponse getExistingUserInfo() {
     final jsonData =
         sharedPreferences.getString(KString.getExistingUserResponseKey);
     if (jsonData != null) {
-      return UserResponseModel.fromJson(jsonData);
+      return UserResponse.fromJson(jsonData);
     } else {
       throw const DatabaseException('Not save users');
     }

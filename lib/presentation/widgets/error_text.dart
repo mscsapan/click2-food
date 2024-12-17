@@ -18,6 +18,7 @@ class ErrorText extends StatelessWidget {
       child: CustomText(
         text: "* $text",
         color: c,
+        fontWeight: FontWeight.w600,
       ),
     );
   }

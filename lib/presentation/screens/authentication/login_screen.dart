@@ -1,5 +1,9 @@
+import 'package:click_food/data/models/auth/auth_state_model.dart';
 import 'package:click_food/presentation/widgets/custom_app_bar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../logic/bloc/auth/auth_bloc.dart';
+import '../../widgets/error_text.dart';
 import '/presentation/routes/route_packages_name.dart';
 import '/presentation/utils/k_images.dart';
 import '/presentation/widgets/custom_image.dart';
@@ -10,8 +14,21 @@ import '../../routes/route_names.dart';
 import '../../utils/utils.dart';
 import '../../widgets/custom_text.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late AuthBloc authBloc;
+
+  @override
+  void initState() {
+    authBloc = context.read<AuthBloc>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,24 +55,44 @@ class LoginScreen extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: grayColor3),
           Utils.verticalSpace(24.0),
-          TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Enter your email',
-                prefixIcon: Padding(
-                  padding: Utils.only(top: 2.0),
-                  child: const Icon(
-                    Icons.email_outlined,
-                    color: grayColor3,
-                    size: 24.0,
-                  ),
-                ),
-              ),
-              style: inputStyle),
+          BlocBuilder<AuthBloc, AuthStateModel>(
+            builder: (context, auth) {
+              final state = auth.authState;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    initialValue: auth.email,
+                      onChanged: (String text)=> authBloc..add(AuthEventUserEmail(text))..add(const AuthEmailValidate()),
+                      decoration: InputDecoration(
+                        hintText: 'Enter your email',
+                        prefixIcon: Padding(
+                          padding: Utils.only(top: 2.0),
+                          child: const Icon(
+                            Icons.email_outlined,
+                            color: grayColor3,
+                            size: 24.0,
+                          ),
+                        ),
+                      ),
+                      style: inputStyle),
+                  if (state is AuthInvalidEmail) ...[
+                    ErrorText(text: state.message),
+                  ]
+                ],
+              );
+            },
+          ),
           Utils.verticalSpace(24.0),
           PrimaryButton(
               text: 'Continue',
-              onPressed: () =>
-                  Navigator.pushNamed(context, RouteNames.validPasswordScreen),
+              onPressed: () {
+                Utils.closeKeyBoard(context);
+                if(authBloc.state.email.trim().isNotEmpty && Utils.isValidEmail(authBloc.state.email)){
+                  // debugPrint('valid');
+                  Navigator.pushNamed(context, RouteNames.validPasswordScreen);
+                }
+              },
               buttonType: ButtonType.icon),
           Utils.verticalSpace(20.0),
           const CustomText(
@@ -65,7 +102,7 @@ class LoginScreen extends StatelessWidget {
               textAlign: TextAlign.center),
           Container(
             alignment: Alignment.bottomCenter,
-            margin: Utils.only(top: Utils.mediaQuery(context).height * 0.24),
+            margin: Utils.only(top: Utils.mediaQuery(context).height * 0.18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

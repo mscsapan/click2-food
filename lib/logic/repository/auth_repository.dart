@@ -2,17 +2,16 @@ import 'package:dartz/dartz.dart';
 
 import '../../data/data_provider/local_data_source.dart';
 import '../../data/data_provider/remote_data_source.dart';
-import '../../data/models/auth/login_state_model.dart';
+import '../../data/models/auth/auth_state_model.dart';
 import '../../data/models/auth/user_response_model.dart';
 import '../../presentation/errors/exception.dart';
 import '../../presentation/errors/failure.dart';
 
 abstract class AuthRepository {
-  Future<Either<dynamic, UserResponseModel>> login(LoginStateModel body);
+  Future<Either<dynamic, UserResponse>> login(AuthStateModel body);
 
   Future<Either<Failure, String>> logout(String token);
 
-  Either<Failure, UserResponseModel> getExistingUserInfo();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -23,12 +22,12 @@ class AuthRepositoryImpl implements AuthRepository {
       {required this.remoteDataSources, required this.localDataSources});
 
   @override
-  Future<Either<dynamic, UserResponseModel>> login(LoginStateModel body) async {
+  Future<Either<dynamic, UserResponse>> login(AuthStateModel body) async {
     try {
       final result = await remoteDataSources.login(body);
-      localDataSources.cacheUserResponse(result);
-      //final login = LoginStateModel.fromMap(result);
-      return Right(result);
+      // localDataSources.cacheUserResponse(result);
+      final login = UserResponse.fromMap(result);
+      return Right(login);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
     } on InvalidAuthData catch (e) {
@@ -36,15 +35,6 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  @override
-  Either<Failure, UserResponseModel> getExistingUserInfo() {
-    try {
-      final result = localDataSources.getExistingUserInfo();
-      return Right(result);
-    } on DatabaseException catch (e) {
-      return Left(DatabaseFailure(e.message));
-    }
-  }
 
   @override
   Future<Either<Failure, String>> logout(String token) async {

@@ -1,4 +1,10 @@
+import '/presentation/widgets/loading_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/models/auth/auth_state_model.dart';
+import '../../../logic/bloc/auth/auth_bloc.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../widgets/error_text.dart';
 import '/presentation/routes/route_packages_name.dart';
 import '/presentation/utils/k_images.dart';
 import '/presentation/widgets/custom_image.dart';
@@ -9,8 +15,21 @@ import '../../routes/route_names.dart';
 import '../../utils/utils.dart';
 import '../../widgets/custom_text.dart';
 
-class ValidPasswordScreen extends StatelessWidget {
+class ValidPasswordScreen extends StatefulWidget {
   const ValidPasswordScreen({super.key});
+
+  @override
+  State<ValidPasswordScreen> createState() => _ValidPasswordScreenState();
+}
+
+class _ValidPasswordScreenState extends State<ValidPasswordScreen> {
+  late AuthBloc authBloc;
+
+  @override
+  void initState() {
+    authBloc = context.read<AuthBloc>();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,51 +56,97 @@ class ValidPasswordScreen extends StatelessWidget {
               fontWeight: FontWeight.w500,
               color: grayColor3),
           Utils.verticalSpace(24.0),
-          TextFormField(
-              decoration: InputDecoration(
-                hintText: 'Type your password',
-                prefixIcon: Padding(
-                  padding: Utils.only(top: 2.0),
-                  // child: CustomImage(path: KImages.lockIcon,height: 20.0,width: 20.0,fit: BoxFit.contain,),
-                  child: const Icon(
-                    Icons.lock_outline,
-                    color: grayColor3,
-                    size: 24.0,
+          BlocBuilder<AuthBloc, AuthStateModel>(
+            builder: (context, auth) {
+              final state = auth.authState;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                      initialValue: auth.password,
+                      onChanged: (String text) => authBloc
+                        ..add(AuthEventPassword(text))
+                        ..add(const AuthPasswordValidate()),
+                      decoration: InputDecoration(
+                        hintText: 'Type your password',
+                        prefixIcon: Padding(
+                          padding: Utils.only(top: 2.0),
+                          // child: CustomImage(path: KImages.lockIcon,height: 20.0,width: 20.0,fit: BoxFit.contain,),
+                          child: const Icon(
+                            Icons.lock_outline,
+                            color: grayColor3,
+                            size: 24.0,
+                          ),
+                        ),
+                        suffixIcon: Padding(
+                          padding: Utils.only(top: 2.0),
+                          child:  IconButton(
+                            onPressed: ()=>authBloc.add(const AuthShowPassword()),
+                           icon:  Icon(
+                            auth.isActive?  Icons.visibility_off_rounded:Icons.visibility_outlined,
+                             color: grayColor3,
+                             size: 22.0,
+                           ),
+                          ),
+                        ),
+                      ),
+                      obscureText: auth.isActive,
+                      style: inputStyle),
+                  Utils.verticalSpace(6.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (state is AuthInvalidPassword) ...[
+                        ErrorText(text: state.message),
+                      ] else ...[
+                        const SizedBox.shrink()
+                      ],
+                      GestureDetector(
+                        onTap: () {
+                          // context.read<ForgotPasswordCubit>().clear();
+                          Navigator.pushNamed(
+                              context, RouteNames.forgotPasswordScreen);
+                        },
+                        child: const CustomText(
+                          text: 'Forgot password?',
+                          fontSize: 14.0,
+                          textAlign: TextAlign.end,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF757D85),
+                          height: 1.6,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                suffixIcon: Padding(
-                  padding: Utils.only(top: 2.0),
-                  child: const Icon(
-                    Icons.visibility_outlined,
-                    color: grayColor3,
-                    size: 22.0,
-                  ),
-                ),
-              ),
-              obscureText: true,
-              style: inputStyle),
-          Utils.verticalSpace(8.0),
-          GestureDetector(
-            onTap: () {
-              // context.read<ForgotPasswordCubit>().clear();
-              Navigator.pushNamed(context, RouteNames.forgotPasswordScreen);
+                ],
+              );
             },
-            child: const CustomText(
-              text: 'Forgot password?',
-              fontSize: 14.0,
-              textAlign: TextAlign.end,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF757D85),
-              height: 1.6,
-            ),
           ),
           Utils.verticalSpace(24.0),
-          PrimaryButton(
-              text: 'Login',
-              onPressed: () {
-                // Navigator.pushNamed(context, RouteNames.loginScreen)
-              },
-              buttonType: ButtonType.icon),
+          BlocConsumer<AuthBloc, AuthStateModel>(
+            listener: (context, auth) {
+              final state = auth.authState;
+              if(state is AuthStateError){
+                Utils.errorSnackBar(context, state.message);
+              }
+            },
+            builder: (context, auth) {
+              final state = auth.authState;
+              if(state is AuthStateLoading){
+                return const LoadingWidget();
+              }
+              return PrimaryButton(
+                  text: 'Login',
+                  onPressed: () {
+                    Utils.closeKeyBoard(context);
+                    if(auth.password.trim().isNotEmpty && Utils.isValidPassword(auth.password)){
+                      authBloc.add(const AuthEventLogin());
+                    }
+                    // Navigator.pushNamed(context, RouteNames.loginScreen)
+                  },
+                  buttonType: ButtonType.icon);
+            },
+          ),
           Utils.verticalSpace(20.0),
           const CustomText(
               text: 'Log in with phone number',
@@ -90,7 +155,7 @@ class ValidPasswordScreen extends StatelessWidget {
               textAlign: TextAlign.center),
           Container(
             alignment: Alignment.bottomCenter,
-            margin: Utils.only(top: Utils.mediaQuery(context).height * 0.18),
+            margin: Utils.only(top: Utils.mediaQuery(context).height * 0.16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

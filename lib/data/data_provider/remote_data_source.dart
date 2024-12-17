@@ -1,15 +1,16 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
-import '../models/auth/login_state_model.dart';
+import '../models/auth/auth_state_model.dart';
 import 'network_parser.dart';
 import 'remote_url.dart';
 
 abstract class RemoteDataSource {
-  Future login(LoginStateModel body);
+  Future login(AuthStateModel body);
 
   Future logout(String token);
 
-  Future getSetting();
 }
 
 typedef CallClientMethod = Future<http.Response> Function();
@@ -20,7 +21,7 @@ class RemoteDataSourceImpl extends RemoteDataSource {
   RemoteDataSourceImpl({required this.client});
 
   final headers = {
-    'Accept': 'application/json',
+    // 'Accept': 'application/json',
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
   };
@@ -31,9 +32,10 @@ class RemoteDataSourceImpl extends RemoteDataSource {
   };
 
   @override
-  Future login(LoginStateModel body) async {
+  Future login(AuthStateModel body) async {
+    final mapBody = jsonEncode(body.toMap());
     final uri = Uri.parse(RemoteUrls.login);
-    final clientMethod = client.post(uri, body: body.toMap(), headers: headers);
+    final clientMethod = client.post(uri, body: mapBody, headers: headers);
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);
     return responseJsonBody;
@@ -48,14 +50,6 @@ class RemoteDataSourceImpl extends RemoteDataSource {
     return responseJsonBody;
   }
 
-  @override
-  Future getSetting() async {
-    final uri = Uri.parse(RemoteUrls.websiteSetup);
-    final clientMethod = client.get(uri, headers: headers);
-    final responseJsonBody =
-        await NetworkParser.callClientWithCatchException(() => clientMethod);
-    return responseJsonBody;
-  }
 
 // @override
 // Future<String> updatePropertyRequest(

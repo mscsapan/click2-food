@@ -2,15 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-import '../../data/models/auth/login_state_model.dart';
 import '../../data/models/setting/currencies_model.dart';
-import '../../logic/bloc/login/login_bloc.dart';
-import '../routes/route_names.dart';
 import '../widgets/custom_text.dart';
 import 'constraints.dart';
 
@@ -32,6 +28,11 @@ class Utils {
   static bool isValidEmail(String email) {
     final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     return regex.hasMatch(email);
+  }
+
+  static bool isValidPassword(String password) {
+    final regex = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+    return regex.hasMatch(password);
   }
 
   static String capitalizeFirstLetter(String input) {
@@ -114,57 +115,6 @@ class Utils {
       String url, String token, String langCode, String page) {
     return Uri.parse(url).replace(
         queryParameters: {'token': token, 'lang_code': langCode, 'page': page});
-  }
-
-  static BlocListener<LoginBloc, LoginStateModel> logoutListener() {
-    return BlocListener<LoginBloc, LoginStateModel>(
-      listener: (context, state) {
-        final logout = state.loginState;
-        if (logout is LoginStateLogoutLoading) {
-          Utils.loadingDialog(context);
-        } else {
-          Utils.closeDialog(context);
-          if (logout is LoginStateLogoutError) {
-            Utils.errorSnackBar(context, logout.message);
-          } else if (logout is LoginStateLogoutLoaded) {
-            Utils.showSnackBar(context, logout.message);
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteNames.loginScreen,
-              (route) => false,
-            );
-          }
-        }
-      },
-    );
-  }
-
-  static Widget logout({required Widget child}) {
-    return BlocListener<LoginBloc, LoginStateModel>(
-      listener: (context, state) {
-        final logout = state.loginState;
-        if (logout is LoginStateLogoutLoading) {
-          Utils.loadingDialog(context);
-        } else {
-          Utils.closeDialog(context);
-          if (logout is LoginStateLogoutError) {
-            Utils.errorSnackBar(context, logout.message);
-          } else if (logout is LoginStateLogoutLoaded) {
-            Utils.showSnackBar(context, logout.message);
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteNames.loginScreen,
-              (route) => false,
-            );
-          }
-        }
-      },
-      child: child,
-    );
-  }
-
-  static Future<void> logoutFunction(BuildContext context) async {
-    context.read<LoginBloc>().add(const LoginEventLogout());
   }
 
   static Future<String?> pickSingleImage() async {
