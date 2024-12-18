@@ -1,6 +1,6 @@
-import 'package:click_food/data/models/auth/auth_state_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '/data/models/auth/auth_state_model.dart';
 
 import '../../../logic/bloc/auth/auth_bloc.dart';
 import '../../routes/route_names.dart';
@@ -27,10 +27,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void initState() {
     authBloc = context.read<AuthBloc>();
     // debugPrint('current-state ${authBloc.state.authState}');
-    if (authBloc.state.email.isNotEmpty) {
-      debugPrint('not-empty-email ${authBloc.state.email}');
-      authBloc.add(const AuthEventUserEmail(''));
-    }
+    // if (authBloc.state.email.isNotEmpty) {
+    //   debugPrint('not-empty-email ${authBloc.state.email}');
+    //   authBloc.add(const AuthEventUserEmail(''));
+    // }
 
     // debugPrint('current-state ${authBloc.state.authState}');
     super.initState();
@@ -91,8 +91,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
-                        controller: authBloc.emailController,
-                        // initialValue: auth.email,
+                        // controller: authBloc.emailController,
+                        initialValue: auth.email,
                         onChanged: (String text) => authBloc
                           ..add(AuthEventUserEmail(text))
                           ..add(const AuthEmailValidate()),
@@ -226,15 +226,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           authBloc.add(const AuthEventReset());
           Utils.errorSnackBar(context, state.message);
         }else if(state is AuthStateUserAdded){
-          authBloc.add(const AuthEventReset());
+          authBloc..add(const AuthEventReset())..add(AuthEventPassword(states.password));
+
+          _accountNotFound(context,state.responses);
+
           Utils.showSnackBar(context, state.responses);
-          Navigator.pushNamedAndRemoveUntil(context,RouteNames.homeScreen,(route)=>false);
+          // Navigator.pushNamedAndRemoveUntil(context,RouteNames.homeScreen,(route)=>false);
         }
       },
       builder: (context, states) {
         final state = states.authState;
         final isValid = states.name.trim().isNotEmpty && states.email.trim().isNotEmpty && Utils.isValidEmail(states.email)  && states.password.trim().isNotEmpty && Utils.isValidPassword(states.password) && states.conPassword.contains(states.password);
-        return state is AuthStateLoading? _loading():  Container(
+        return state is AuthStateAdding? _loading():  Container(
           padding: Utils.only(
             left: 20.0,
             right: 20.0,
@@ -256,6 +259,76 @@ class _SignUpScreenState extends State<SignUpScreen> {
               buttonType: ButtonType.icon),
         );
       },
+    );
+  }
+
+  _accountNotFound(BuildContext context,String text){
+    // debugPrint('isListen ${authBloc.isListen}');
+    Utils.showCustomDialog(context,
+      radius: 16.0,
+      padding: Utils.symmetric(h: 16.0),
+      child: BlocListener<AuthBloc, AuthStateModel>(
+        listener: (context, auth) {
+          final state = auth.authState;
+          if(state is AuthStateLoading){
+            Utils.loadingDialog(context);
+          }else{
+            // authBloc.add(const AuthEventReset());
+            Utils.closeDialog(context);
+            if(state is AuthStateError){
+              authBloc.add(const AuthEventReset());
+              Utils.errorSnackBar(context, state.message);
+            }else if(state is AuthStateLoaded){
+              // authBloc.add(const AuthEventReset());
+              // Utils.showSnackBar(context, state.responses);
+              Navigator.pushNamedAndRemoveUntil(context,RouteNames.homeScreen,(route)=>false);
+            }
+          }
+
+        },
+        child: Padding(
+          padding: Utils.all(value: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Container(
+                  //   padding: Utils.all(value:10.0),
+                  //   decoration: BoxDecoration(
+                  //     color: redColor.withOpacity(0.2),
+                  //     borderRadius: Utils.borderRadius(r: 8.0),
+                  //   ),
+                  //   child: const CustomImage(path: KImages.userNotFound),
+                  // ),
+                  const Spacer(),
+                  IconButton(onPressed: ()=>Navigator.of(context).pop(), icon: const Icon(Icons.clear)),
+                ],
+              ),
+              Utils.verticalSpace(16.0),
+               CustomText(text: text,fontSize: 18.0,fontWeight: FontWeight.w600,color: const Color(0xFF2D3034)),
+              //Utils.verticalSpace(8.0),
+              //const CustomText(text: 'It looks like there’s no account associated with this phone number. Click continue to open a new account.',fontSize: 12.0,fontWeight: FontWeight.w600,color: Color(0xFF757D85),height: 1.5,),
+              Utils.verticalSpace(24.0),
+              Row(
+                children: [
+                  Expanded(child: PrimaryButton(text: 'Back', onPressed: ()=>Navigator.of(context).pop(),buttonType: ButtonType.outlined,borderColor: grayColor2,bgColor: whiteColor,textColor: blackColor,fontWeight: FontWeight.w700,  isShowIcon: false,)),
+                  Utils.horizontalSpace(8.0),
+                  Expanded(child: PrimaryButton(
+                      text: 'Login',
+                      onPressed: () {
+                        authBloc.add(const AuthEventLogin());
+                        // context.read<OtpBloc>().add(const OtpEventSendOTP());
+                      },
+                      buttonType: ButtonType.icon)),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

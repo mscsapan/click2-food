@@ -38,6 +38,8 @@ final class AuthInvalidConPassword extends AuthState {
 
 class AuthStateLoading extends AuthState {}
 
+class AuthStateAdding extends AuthState {}
+
 // class AuthStateLogoutLoading extends AuthState {
 //   @override
 //   List<Object> get props => [];

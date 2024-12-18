@@ -42,6 +42,24 @@ class Utils {
     return input[0].toUpperCase() + input.substring(1).toLowerCase();
   }
 
+  static String obfuscateEmail(String email) {
+    final emailParts = email.split('@');
+    if (emailParts.length != 2) return email;
+
+    final username = emailParts[0];
+    final domain = emailParts[1];
+
+    if (username.length <= 4) {
+      return email;
+    }
+
+    final visibleStart = username.substring(0, 4);
+    final visibleEnd = username[username.length - 1];
+    final hiddenStars = '*' * (username.length - 5);
+
+    return '$visibleStart$hiddenStars$visibleEnd@$domain';
+  }
+
 
   static String convertCurrency(var price, BuildContext context, CurrenciesModel c,
       [int radix = 1]) {

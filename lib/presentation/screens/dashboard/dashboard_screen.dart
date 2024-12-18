@@ -1,4 +1,6 @@
+import 'package:click_food/presentation/routes/route_packages_name.dart';
 import 'package:click_food/presentation/widgets/custom_app_bar.dart';
+import 'package:click_food/presentation/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,9 +30,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: CustomAppBar(),
-      body: Column(),
+    return  Scaffold(
+      appBar: AppBar(),
+      // appBar: const CustomAppBar(),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomText(text: authBloc.responses?.userName??'',fontSize: 16.0,fontWeight: FontWeight.w600,color: blackColor,)
+          ],
+        ),
+      ),
     );
   }
 }

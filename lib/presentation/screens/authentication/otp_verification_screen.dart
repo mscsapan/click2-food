@@ -54,8 +54,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               fontSize: 24.0,
               fontWeight: FontWeight.w700),
           Utils.verticalSpace(8.0),
-          const CustomText(
-              text: "We’ve sent an OTP to mart*****4@gmail.com",
+           CustomText(
+              text: "We’ve sent an OTP to ${Utils.obfuscateEmail(authBloc.state.email)}",
               fontWeight: FontWeight.w500,
               color: grayColor3),
           Utils.verticalSpace(24.0),

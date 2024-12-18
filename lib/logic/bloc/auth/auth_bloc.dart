@@ -21,6 +21,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthStateModel> {
 
   TextEditingController emailController = TextEditingController();
 
+  UserResponse? responses;
+
   AuthBloc({required AuthRepository repository})
       : _repository = repository,
         super(const AuthStateModel()) {
@@ -93,6 +95,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthStateModel> {
         }
       },
           (success) {
+            responses = success;
+
         final userLoaded = AuthStateLoaded(responses: success);
 
         emit(state.copyWith(authState: userLoaded));
@@ -101,7 +105,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthStateModel> {
   }
 
   Future<void> _addUser(AuthEventAddUser event, Emitter<AuthStateModel> emit) async {
-    emit(state.copyWith(authState: AuthStateLoading()));
+    debugPrint('add-ser ${state.toAddMap()}');
+    emit(state.copyWith(authState: AuthStateAdding()));
     final result = await _repository.addUser(state);
     result.fold(
           (failure) {
