@@ -7,6 +7,7 @@ class KImages {
   static const String passwordIcon = 'assets/icons/password-icon.svg';
   static const String forgotPasswordIcon = 'assets/icons/forgot-password.svg';
   static const String loginIcon = 'assets/icons/login-icon.svg';
+  static const String userNotFound = 'assets/images/user-not-found.png';
   static const String otpIcon = 'assets/icons/otp-icon.svg';
   static const String updatePassIcon = 'assets/icons/update-pass-icon.svg';
   static const String splashBg = 'assets/images/splash-image.png';

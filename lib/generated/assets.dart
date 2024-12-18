@@ -14,5 +14,6 @@ class Assets {
   static const String imagesDefaultImage = 'assets/images/default_image.png';
   static const String imagesLoginTopbarImg = 'assets/images/login-topbar-img.png';
   static const String imagesSplashImage = 'assets/images/splash-image.png';
+  static const String imagesUserNotFound = 'assets/images/user-not-found.png';
 
 }

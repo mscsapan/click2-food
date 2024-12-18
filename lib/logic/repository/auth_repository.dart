@@ -10,6 +10,14 @@ import '../../presentation/errors/failure.dart';
 abstract class AuthRepository {
   Future<Either<dynamic, UserResponse>> login(AuthStateModel body);
 
+  Future<Either<dynamic, bool>> checkUser(AuthStateModel body);
+
+  Future<Either<dynamic, String>> sendOtp(AuthStateModel body);
+
+  Future<Either<dynamic, String>> verifyOtp(AuthStateModel body);
+
+  Future<Either<dynamic, String>> addUser(AuthStateModel body);
+
   Future<Either<Failure, String>> logout(String token);
 
 }
@@ -44,6 +52,53 @@ class AuthRepositoryImpl implements AuthRepository {
       return Right(logout);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message, e.statusCode));
+    }
+  }
+
+  @override
+  Future<Either<dynamic, bool>> checkUser(AuthStateModel body) async{
+    try {
+      final result = await remoteDataSources.checkUser(body);
+      return Right(result['success']);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
+    }
+  }
+
+  @override
+  Future<Either<dynamic, String>> sendOtp(AuthStateModel body) async{
+    try {
+      final result = await remoteDataSources.sendOtp(body);
+      return Right(result['message']);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
+    }
+  }
+
+  @override
+  Future<Either<dynamic, String>> verifyOtp(AuthStateModel body) async{
+    try {
+      final result = await remoteDataSources.verifyOtp(body);
+      return Right(result['message']);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
+    }
+  }
+  @override
+  Future<Either<dynamic, String>> addUser(AuthStateModel body) async{
+    try {
+      final result = await remoteDataSources.addUser(body);
+      return Right(result['message']);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message, e.statusCode));
+    } on InvalidAuthData catch (e) {
+      return Left(InvalidAuthData(e.errors));
     }
   }
 }

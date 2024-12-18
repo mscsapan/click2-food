@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/auth/auth_state_model.dart';
@@ -8,6 +9,14 @@ import 'remote_url.dart';
 
 abstract class RemoteDataSource {
   Future login(AuthStateModel body);
+
+  Future checkUser(AuthStateModel body);
+
+  Future sendOtp(AuthStateModel body);
+
+  Future verifyOtp(AuthStateModel body);
+
+  Future addUser(AuthStateModel body);
 
   Future logout(String token);
 
@@ -35,6 +44,47 @@ class RemoteDataSourceImpl extends RemoteDataSource {
   Future login(AuthStateModel body) async {
     final mapBody = jsonEncode(body.toMap());
     final uri = Uri.parse(RemoteUrls.login);
+    final clientMethod = client.post(uri, body: mapBody, headers: headers);
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future addUser(AuthStateModel body) async {
+    final mapBody = jsonEncode(body.toAddMap());
+    final uri = Uri.parse(RemoteUrls.addUser);
+    final clientMethod = client.post(uri, body: mapBody, headers: headers);
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future checkUser(AuthStateModel body) async {
+    final mapBody = jsonEncode({'email': body.email});
+    final uri = Uri.parse(RemoteUrls.checkUser);
+    final clientMethod = client.post(uri, body: mapBody, headers: headers);
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future verifyOtp(AuthStateModel body) async {
+    final mapBody = jsonEncode({"email": body.email,"otp": body.otp});
+    final uri = Uri.parse(RemoteUrls.verifyOtp);
+    final clientMethod = client.post(uri, body: mapBody, headers: headers);
+    final responseJsonBody =
+        await NetworkParser.callClientWithCatchException(() => clientMethod);
+    return responseJsonBody;
+  }
+
+  @override
+  Future sendOtp(AuthStateModel body) async {
+    final mapBody = jsonEncode({'email': body.email});
+    final uri = Uri.parse(RemoteUrls.sendOtp);
+    debugPrint('send-otp-body $mapBody - $uri');
     final clientMethod = client.post(uri, body: mapBody, headers: headers);
     final responseJsonBody =
         await NetworkParser.callClientWithCatchException(() => clientMethod);

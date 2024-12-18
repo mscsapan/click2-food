@@ -25,6 +25,7 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.fontFamily,
     this.socialIcon,
+    this.isShowIcon =  true,
   });
 
   final VoidCallback? onPressed;
@@ -43,6 +44,7 @@ class PrimaryButton extends StatelessWidget {
   final FontWeight fontWeight;
   final String? fontFamily;
   final String? socialIcon;
+  final bool isShowIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +78,8 @@ class PrimaryButton extends StatelessWidget {
           ),
           // label: tempIcon,
           style: ButtonStyle(
-            backgroundColor: WidgetStateProperty.all(primaryColor),
-            shape: WidgetStateProperty.all(
-                RoundedRectangleBorder(borderRadius: borderRadius)),
+            backgroundColor: WidgetStateProperty.all(bgColor),
+            shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: borderRadius)),
             maximumSize: WidgetStateProperty.all(maximumSize),
             minimumSize: WidgetStateProperty.all(minimumSize),
             shadowColor: WidgetStateProperty.all(transparent),
@@ -105,7 +106,7 @@ class PrimaryButton extends StatelessWidget {
           ),
           child: Row(
             children: [
-              CustomImage(path: si),
+              if(isShowIcon)...[CustomImage(path: si)],
               const Spacer(),
               CustomText(
                 text: text,

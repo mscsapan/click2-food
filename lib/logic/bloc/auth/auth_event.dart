@@ -16,6 +16,15 @@ class AuthEventUserEmail extends AuthEvent {
   List<Object> get props => [email];
 }
 
+class AuthEventUserName extends AuthEvent {
+  final String name;
+
+  const AuthEventUserName(this.name);
+
+  @override
+  List<Object> get props => [name];
+}
+
 class AuthEventPassword extends AuthEvent {
   final String password;
 
@@ -24,8 +33,29 @@ class AuthEventPassword extends AuthEvent {
   @override
   List<Object> get props => [password];
 }
+
+class AuthEventConPassword extends AuthEvent {
+  final String conPassword;
+
+  const AuthEventConPassword(this.conPassword);
+
+  @override
+  List<Object> get props => [conPassword];
+}
+
 class AuthShowPassword extends AuthEvent {
   const AuthShowPassword();
+}
+
+class AuthShowConPassword extends AuthEvent {
+  const AuthShowConPassword();
+}
+
+class AuthAddOTP extends AuthEvent {
+  final String otp;
+  const AuthAddOTP(this.otp);
+  @override
+  List<Object?> get props => [otp];
 }
 
 class AuthEmailValidate extends AuthEvent {
@@ -36,6 +66,26 @@ class AuthPasswordValidate extends AuthEvent {
   const AuthPasswordValidate();
 }
 
+class AuthConPasswordValidate extends AuthEvent {
+  const AuthConPasswordValidate();
+}
+
+class AuthEventReset extends AuthEvent {
+  const AuthEventReset();
+}
+
 class AuthEventLogin extends AuthEvent {
   const AuthEventLogin();
+}
+
+class AuthEventAddUser extends AuthEvent {
+  const AuthEventAddUser();
+}
+
+class AuthEventCheckUser extends AuthEvent {
+  const AuthEventCheckUser();
+}
+
+class AuthEventVerifyOtp extends AuthEvent {
+  const AuthEventVerifyOtp();
 }

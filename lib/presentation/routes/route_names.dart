@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/authentication/sign_up_screen.dart';
 import '../screens/authentication/valid_password_screen.dart';
+import '../screens/dashboard/dashboard_screen.dart';
 import 'route_packages_name.dart';
 
 class RouteNames {
@@ -49,6 +50,10 @@ class RouteNames {
         case RouteNames.signUpScreen:
         return MaterialPageRoute(
             settings: settings, builder: (_) => const SignUpScreen());
+
+        case RouteNames.homeScreen:
+        return MaterialPageRoute(
+            settings: settings, builder: (_) => const DashboardScreen());
 
         case RouteNames.validPasswordScreen:
         return MaterialPageRoute(

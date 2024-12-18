@@ -7,17 +7,18 @@ class RemoteUrls {
 
   static const String login = '${baseUrl}Administrator/Login';
 
+  static const String addUser = '${baseUrl}Administrator/SaveUser';
+
+  static const String checkUser = '${baseUrl}Administrator/CheckUserExists';
+
+  static const String sendOtp = '${baseUrl}Administrator/SendOTPToEmail';
+
+  static const String verifyOtp = '${baseUrl}Administrator/CheckOTPFromEmail';
+
 
   static String changePassword(String token) => '${baseUrl}user/update-password?token=$token';
 
   static String logout(String token) => '${baseUrl}user/logout?token=$token';
-  static const String sendForgetPassword = '${baseUrl}send-forget-password';
-  static const String resendRegisterCode = '${baseUrl}resend-register-code';
-
-  static String storeResetPassword = '${baseUrl}store-reset-password';
-
-  static String userVerification = '${baseUrl}user-verification';
-  static String resendVerificationCode = '${baseUrl}resend-register';
 
   static imageUrl(String imageUrl) => rootUrl + imageUrl;
 }

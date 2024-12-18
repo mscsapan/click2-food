@@ -126,8 +126,14 @@ class _ValidPasswordScreenState extends State<ValidPasswordScreen> {
           BlocConsumer<AuthBloc, AuthStateModel>(
             listener: (context, auth) {
               final state = auth.authState;
+
               if(state is AuthStateError){
+                authBloc.add(const AuthEventReset());
                 Utils.errorSnackBar(context, state.message);
+              }else if(state is AuthStateLoaded){
+                authBloc.add(const AuthEventReset());
+                // Utils.showSnackBar(context, state.responses);
+                Navigator.pushNamedAndRemoveUntil(context,RouteNames.homeScreen,(route)=>false);
               }
             },
             builder: (context, auth) {

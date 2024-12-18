@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dependency_injection_packages.dart';
 import 'logic/bloc/auth/auth_bloc.dart';
+import 'logic/bloc/otp/otp_bloc.dart';
 
 class DInjector {
   static late final SharedPreferences _sharedPreferences;
@@ -42,6 +43,12 @@ class DInjector {
 
     BlocProvider<AuthBloc>(
       create: (BuildContext context) => AuthBloc(
+        repository: context.read(),
+      ),
+    ),
+
+    BlocProvider<OtpBloc>(
+      create: (BuildContext context) => OtpBloc(
         repository: context.read(),
       ),
     ),

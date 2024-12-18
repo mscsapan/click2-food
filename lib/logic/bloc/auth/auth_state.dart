@@ -27,6 +27,14 @@ final class AuthInvalidPassword extends AuthState {
 
 }
 
+final class AuthInvalidConPassword extends AuthState {
+  final String message;
+  const AuthInvalidConPassword(this.message);
+  @override
+  List<Object> get props => [message];
+
+}
+
 
 class AuthStateLoading extends AuthState {}
 
@@ -54,6 +62,15 @@ class AuthStateLoaded extends AuthState {
   List<Object> get props => [responses];
 }
 
+class AuthStateUserAdded extends AuthState {
+  final String responses;
+
+  const AuthStateUserAdded({required this.responses});
+
+  @override
+  List<Object> get props => [responses];
+}
+
 class AuthStateFormValidate extends AuthState {
   final Errors errors;
 
@@ -61,4 +78,22 @@ class AuthStateFormValidate extends AuthState {
 
   @override
   List<Object> get props => [errors];
+}
+
+class AuthStateExistUser extends AuthState {
+  final bool responses;
+
+  const AuthStateExistUser({required this.responses});
+
+  @override
+  List<Object> get props => [responses];
+}
+
+class AuthStateOTPVerify extends AuthState {
+  final String responses;
+
+  const AuthStateOTPVerify({required this.responses});
+
+  @override
+  List<Object> get props => [responses];
 }
